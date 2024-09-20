@@ -18,13 +18,9 @@ vexcode_brain_precision = 0
 vexcode_console_precision = 0
 myVariable = 0
 
-def when_started1():
-    global myVariable, vexcode_brain_precision, vexcode_console_precision
-    brain.screen.print("It's easier to assimilate, than explain.")
-
 def onauton_autonomous_0():
     global myVariable, vexcode_brain_precision, vexcode_console_precision
-    pass
+    brain.screen.print("It's easier to assimilate, than explain.")
 
 # create a function for handling the starting and stopping of all autonomous tasks
 def vexcode_auton_function():
@@ -49,5 +45,3 @@ def vexcode_driver_function():
 
 # register the competition functions
 competition = Competition( vexcode_driver_function, vexcode_auton_function )
-
-when_started1()
