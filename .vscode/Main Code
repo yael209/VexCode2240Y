@@ -20,14 +20,17 @@ from vex import *
 brain = Brain()
 player = Controller()
 
-def display_message():
-    brain.screen.clear_screen()           # Clear the screen first
-    brain.screen.set_cursor(1, 1)         # Set the cursor to the top left
-    brain.screen.print("""He is dressed in a robe dipped in blood, 
-                       and his name is the Word of God.""") # Display the message
+if brain.sdcard.is_inserted(): # load up pizazz from the SD Card
+    brain.screen.draw_image_from_file('PR.png',0,0)
+
+# def display_message():
+#     brain.screen.clear_screen()           # Clear the screen first
+#     brain.screen.set_cursor(1, 1)         # Set the cursor to the top left
+#     brain.screen.print("""He is dressed in a robe dipped in blood, 
+#                        and his name is the Word of God.""") # Display the message
 
 # Call the function to display the message
-display_message()
+# display_message()
 
 trackwidth = 12.25 # Farted's measurements
 wheelbase = 10 # inches
