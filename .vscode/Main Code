@@ -58,6 +58,7 @@ arm = DigitalOut(brain.three_wire_port.a)  #Extend the piston arm. Control butto
 claw = DigitalOut(brain.three_wire_port.b) #Retrack the claw piston. Control button R1
 houselift = DigitalOut(brain.three_wire_port.c) #Lift intake piston. Control button R2
 Monkeypaw = DigitalOut(brain.three_wire_port.d) #Monkey Paw Button Up
+Robotpull = DigitalOut(brain.three_wire_port.e) #Moves the robot up
 
 def hold(button,lastState=0):
     """Halt thread until current state changes.
@@ -182,6 +183,25 @@ fullhouse.released(mousestop)(conveyorstop)
 
 
 #end region
+#region UppyPiston
+
+def RobotLift():
+    while True:
+        while not player.buttonLeft.pressing():
+            wait(5,MSEC)
+        Robotpull.set(True)
+        while player.buttonLeft.pressing():
+            wait(5,MSEC)
+        while not player.buttonLeft.pressing():
+            wait(5,MSEC)
+        Robotpull.set(False)
+        while player.buttonLeft.pressing():
+            wait(5,MSEC)
+
+
+
+
+
 #region Conveyor lift
 
 def liftdown():
