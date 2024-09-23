@@ -346,7 +346,7 @@ driver(mousestop)
 driver(mousestop)
 driver(Clawmove)
 driver(Monkeyclaw)
-
+driver(RobotLift)
 
 #end region 
 #region Autonomous movement
