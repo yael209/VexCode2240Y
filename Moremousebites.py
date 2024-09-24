@@ -185,21 +185,17 @@ fullhouse.released(mousestop)(conveyorstop)
 #end region
 #region UppyPiston
 
-def Buttonpair():
-     player.buttonLeft.pressing()
-     player.buttonUp.pressing()
-
 def RobotLift():
     while True:
-        while not Buttonpair:
-            wait(5,MSEC)
-        Robotpull.set(True)
-        while Buttonpair():
-            wait(5,MSEC)
-        while not Buttonpair():
+        while not player.buttonLeft.pressing():
             wait(5,MSEC)
         Robotpull.set(False)
-        while Buttonpair():
+        while player.buttonLeft.pressing():
+            wait(5,MSEC)
+        while not player.buttonLeft.pressing():
+            wait(5,MSEC)
+        Robotpull.set(True)
+        while player.buttonLeft.pressing():
             wait(5,MSEC)
 
 
@@ -352,7 +348,7 @@ driver(mousestop)
 driver(Clawmove)
 driver(Monkeyclaw)
 driver(RobotLift)
-driver(Buttonpair)
+
 
 #end region 
 #region Autonomous movement
