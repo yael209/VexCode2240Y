@@ -9,6 +9,9 @@
 
 # Library imports
 from vex import *
+import atexit
+import bdb
+import runpy
 
 # Brain should be defined by default
 brain=Brain()
