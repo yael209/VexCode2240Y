@@ -11,7 +11,7 @@
 from vex import *
 import atexit
 import bdb
-import runpy
+import importlib
 
 # Brain should be defined by default
 brain=Brain()
@@ -20,6 +20,7 @@ brain=Brain()
 vexcode_brain_precision = 0
 vexcode_console_precision = 0
 myVariable = 0
+doctorcasa = 0
 
 def onauton_autonomous_0():
     global myVariable, vexcode_brain_precision, vexcode_console_precision
@@ -48,3 +49,6 @@ def vexcode_driver_function():
 
 # register the competition functions
 competition = Competition( vexcode_driver_function, vexcode_auton_function )
+
+
+# Down here will be the code to display
