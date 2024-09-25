@@ -189,12 +189,12 @@ def RobotLift():
     while True:
         while not player.buttonLeft.pressing():
             wait(5,MSEC)
-        Robotpull.set(False)
+        Robotpull.set(True)
         while player.buttonLeft.pressing():
             wait(5,MSEC)
         while not player.buttonLeft.pressing():
             wait(5,MSEC)
-        Robotpull.set(True)
+        Robotpull.set(False)
         while player.buttonLeft.pressing():
             wait(5,MSEC)
 
