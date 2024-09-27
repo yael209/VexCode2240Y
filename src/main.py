@@ -348,6 +348,8 @@ driver(IntakeStop)
 driver(Clawmove)
 driver(Hooks)
 driver(RobotLift)
+driver(IntakeStop)
+driver(IntakeStop)
 
 
 #end region 
