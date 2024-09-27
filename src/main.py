@@ -111,7 +111,7 @@ IntakeP.released(IntakeStop) #Keybinds the action of releasing L2 to mousestop
 
 Vic = player.buttonL1 
 Vic.pressed(IntakeOut) #Keybinds the action of pressing L2 to mouseback
-Vic.released(IntakeIn) #Keybinds the action of releasing L1 to mousestop
+Vic.released(IntakeStop) #Keybinds the action of releasing L1 to mousestop
 
 
 
