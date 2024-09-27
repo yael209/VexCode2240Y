@@ -132,7 +132,7 @@ def Intakemove():
       global cane
 cane = player.buttonR2 
 cane.pressed(IntakeUp)#Keybinds the action to trigger the piston
-cane.released(IntakeUp)
+cane.released(IntakeStop)
 
 
 
