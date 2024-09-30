@@ -59,7 +59,8 @@ claw = DigitalOut(brain.three_wire_port.b) #Retrack the claw piston. Control but
 IntakeLift = DigitalOut(brain.three_wire_port.c) #Lift intake piston. Control button R2
 HooksM = DigitalOut(brain.three_wire_port.d) #Monkey Paw Button Up
 Robotpull = DigitalOut(brain.three_wire_port.e) #Moves the robot up
-autonOpt = Optical(Ports.PORT15)
+Ringdetect = Optical(Ports.PORT20)
+autonOpt = Distance(Ports.PORT15)
 
 def hold(button,lastState=0):
     """Halt thread until current state changes.
@@ -74,6 +75,8 @@ def hold(button,lastState=0):
     else:
         if button == lastState: return True # wait for state change
         else: return False
+Blueloop = False
+Redloop = False
 
 # region Base movement
 
@@ -132,7 +135,7 @@ def Intakemove():
       global cane
 cane = player.buttonR2 
 cane.pressed(IntakeUp)#Keybinds the action to trigger the piston
-cane.released(IntakeStop)
+cane.released(IntakeDown)
 
 
 
@@ -357,6 +360,19 @@ driver(IntakeStop)
 #region Autonomous movement
 def disToMot(dis):
     return (dis / wheelcirc) * gearatio # if wrong change second operator to '*'
+color = Ringdetect.color()
+if color == Color.BLUE:
+    Blueloop = True
+    # Add any actions to perform when blue is detected
+    # Check for red color
+elif color == Color.RED:
+    Redloop = True
+    # Add any actions to perform when red is detected
+
+    # Optionally handle other colors or no color
+else:
+    wait(1,MSEC)
+ 
 def degToDis(deg):
     return (deg / 360) * robotcirc # makes a turn from degrees to inches
 def calcArc(degs=0,dis=float(0)):
@@ -472,7 +488,22 @@ def auton():
 
         
     else:                   # no auton; only used in emergencies
-        move(5)
+        dtmots.set_stopping(COAST)
+        lefty.set_stopping(COAST)
+        right.set_stopping(COAST)
+        claw.set(True)
+        move(-20)
+        claw.set(False)
+        conveyor.spin_for(FORWARD,3,TURNS)
+        turn(-90)
+        move(-7)
+        claw.set(True)
+        move(6)
+        wait(30,MSEC)
+        turn(145)
+        
+
+
     
 
         
@@ -492,3 +523,24 @@ right.set_velocity(100,PERCENT)
 IntakeF.set_velocity(100,PERCENT)
 conveyor.set_velocity(100,PERCENT)
 lift.set_velocity(100,PERCENT) 
+# Main loop
+if Blueloop:
+    while True: 
+        color = Ringdetect.color()
+        if color == Color.RED:
+            conveyor.spin_for(REVERSE,1,TURNS)
+        else:
+            wait(1,MSEC) 
+if Redloop:
+    while True: 
+        color = Ringdetect.color()
+        if color == Color.BLUE:
+            conveyor.spin_for(REVERSE,1,TURNS)
+        else:
+            wait(1,MSEC)
+        
+    
+             
+
+        
+
