@@ -98,24 +98,25 @@ def baseCont():
 #region Front intake
 
 def IntakeIn():
-    IntakeF.spin(FORWARD) #Defines mousego as the motor moving
+    IntakeF.spin(FORWARD) #Defines IntakeIn as the motor moving
 
 def IntakeOut():
-      IntakeF.spin(REVERSE) #Defines mouseback as the motor moving in reverse
+      IntakeF.spin(REVERSE) #Defines IntakeOut as the motor moving in reverse
 
 
 def IntakeStop(): #Defines mousestop as the motor being stopped and not moving
+        
     IntakeF.stop()
     
 def InatakeMove():
       global IntakeP
 IntakeP = player.buttonL2 
-IntakeP.pressed(IntakeIn) #Keybinds the action of pressing L2 to mousego
-IntakeP.released(IntakeStop) #Keybinds the action of releasing L2 to mousestop
+IntakeP.pressed(IntakeIn) #Keybinds the action of pressing L2 to IntakeP
+IntakeP.released(IntakeStop) #Keybinds the action of releasing L2 to IntakeStop
 
 Vic = player.buttonL1 
-Vic.pressed(IntakeOut) #Keybinds the action of pressing L2 to mouseback
-Vic.released(IntakeStop) #Keybinds the action of releasing L1 to mousestop
+Vic.pressed(IntakeOut) #Keybinds the action of pressing L2 to IntakeOut
+Vic.released(IntakeStop) #Keybinds the action of releasing L1 to IntakeStop
 
 
 
@@ -126,10 +127,10 @@ Vic.released(IntakeStop) #Keybinds the action of releasing L1 to mousestop
 #region Intake piston lift
 
 def IntakeUp():
-      IntakeLift.set(True) #defines houseup as extending the piston
+      IntakeLift.set(True) #defines IntakeUp as extending the piston
 
 def IntakeDown():
-       IntakeLift.set(False) #defines housedown as retracting the piston
+       IntakeLift.set(False) #defines IntakeDown as retracting the piston
 
 def Intakemove():
       global cane
@@ -235,10 +236,10 @@ LiftJ.released(liftdont)
 #region Claw Piston 
 
 def Clawout():
-      claw.set(True) #defines houseup as extending the piston
+      claw.set(True) #defines clawout as extending the piston
 
 def Clawin():
-       claw.set(False) #defines housedown as retracting the piston
+       claw.set(False) #defines clawin as retracting the piston
 
 def Clawmove():
       global cane
