@@ -105,8 +105,8 @@ def IntakeOut():
 
 
 def IntakeStop(): #Defines mousestop as the motor being stopped and not moving
-        
-    IntakeF.stop()
+        global IntakeStop
+        IntakeF.stop()
     
 def InatakeMove():
       global IntakeP
@@ -152,6 +152,7 @@ def conveyorback():
       conveyor.spin(REVERSE) #Defines conveyor back as moving the belt backwards
 
 def conveyorstop():
+    global conveyorstop
     conveyor.stop() #Defines conveyor stop as stopping the motor
 
 def conveyorbelt():
@@ -217,6 +218,7 @@ def liftup():
     lift.spin(REVERSE) #Defines liftup as moving the lift motor in reverse
 
 def liftdont():
+    global liftdont
     lift.stop() #Defines liftdont as the lift not moving
 
 LiftP = player.buttonB 
@@ -339,22 +341,11 @@ driver(liftup)
 driver(liftdown)
 driver(conveyorgo)  
 driver(liftdont)
-driver(liftdont)
 driver(conveyorstop)
-driver(conveyorstop)
-driver(IntakeStop)
-driver(IntakeStop)
-driver(liftdont)
-driver(liftdont)
-driver(conveyorstop)
-driver(conveyorstop)
-driver(IntakeStop)
 driver(IntakeStop)
 driver(Clawmove)
 driver(Hooks)
 driver(RobotLift)
-driver(IntakeStop)
-driver(IntakeStop)
 
 
 #end region 
