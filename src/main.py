@@ -59,6 +59,8 @@ claw = DigitalOut(brain.three_wire_port.b) #Retrack the claw piston. Control but
 IntakeLift = DigitalOut(brain.three_wire_port.c) #Lift intake piston. Control button R2
 HooksM = DigitalOut(brain.three_wire_port.d) #Monkey Paw Button Up
 Robotpull = DigitalOut(brain.three_wire_port.e) #Moves the robot up
+Ringdetect = Optical(Ports.PORT20)
+autonOpt = Distance(Ports.PORT15)
 
 def hold(button,lastState=0):
     """Halt thread until current state changes.
@@ -73,6 +75,8 @@ def hold(button,lastState=0):
     else:
         if button == lastState: return True # wait for state change
         else: return False
+Blueloop = False
+Redloop = False
 
 # region Base movement
 
@@ -131,7 +135,7 @@ def Intakemove():
       global cane
 cane = player.buttonR2 
 cane.pressed(IntakeUp)#Keybinds the action to trigger the piston
-cane.released(IntakeStop)
+cane.released(IntakeDown)
 
 
 
@@ -354,15 +358,155 @@ driver(IntakeStop)
 
 #end region 
 #region Autonomous movement
+def disToMot(dis):
+    return (dis / wheelcirc) * gearatio # if wrong change second operator to '*'
+color = Ringdetect.color()
+if color == Color.BLUE:
+    Blueloop = True
+    # Add any actions to perform when blue is detected
+    # Check for red color
+elif color == Color.RED:
+    Redloop = True
+    # Add any actions to perform when red is detected
 
-def auton():    
-    
-    lefty.spin_for(FORWARD,5,TURNS)
-    right.spin_for(FORWARD,5,TURNS)
-    
-    lefty.stop()
+    # Optionally handle other colors or no color
+else:
+    wait(1,MSEC)
+ 
+def degToDis(deg):
+    return (deg / 360) * robotcirc # makes a turn from degrees to inches
+def calcArc(degs=0,dis=float(0)):
+    val = 2*math.pi*dis*(degs/360)
+    return disToMot(val)
+def veldec(motor):
+    retval = motor.velocity(PERCENT)    # save OG motor velocity
+    if motor.count() > 3:               # check if we need to slow down whole base
+        motor.set_velocity(motor.velocity()/3)          # change velocity to 1/3 its original value
+    else: motor.set_velocity(motor.velocity() * 0.80)   # reduce velocity by 20%
+    return retval           # return OG velocity, used if necessary
+def autonDetect():
+    if not autonOpt.installed(): return ""  # if sensor is disconnected, return empty
+    if autonOpt.is_near_object():           # check if theres an object covering the sensor
+        ret = "defen"                       # return to run offensive side auton
+    else:
+        ret = "offen"                       # return to run defesive side auton
+    return ret                              # return our variable
+def move(dis):
+    dir = dis / abs(dis)            
+    lefty.set_velocity(70 * dir,PERCENT)         # get direction, -1 for backwards or 1 for forwards
+    right.set_velocity(70 * dir,PERCENT)   # set current velocity to a stable, precise velocity. multiplied by dir
+    right.spin_for(FORWARD,disToMot(dis),TURNS,wait=False)
+    lefty.spin_for(FORWARD,disToMot(dis),TURNS,wait=True) # spins motors using its encoders as reference
+    wait(10)
+def tmove(time):
+    dir = time / abs(time)
+    lefty.set_velocity(80 * dir,PERCENT)         # get direction, -1 for backwards or 1 for forwards
+    right.set_velocity(80 * dir,PERCENT)   # set current velocity to a stable, precise velocity. multiplied by dir
+    lefty.spin(FORWARD)
+    right.spin(FORWARD)
+    wait(abs(time),SECONDS)
     right.stop()
+    lefty.stop()
+def rtmove(time):
+    dir = time / abs(time)
+    lefty.set_velocity(80 * dir,PERCENT)         # get direction, -1 for backwards or 1 for forwards
+    right.set_velocity(80 * dir,PERCENT)   # set current velocity to a stable, precise velocity. multiplied by dir
+    lefty.spin(REVERSE)
+    right.spin(REVERSE)
+    wait(abs(time),SECONDS)
+    right.stop()
+    lefty.stop()
+def turn(theta):
+    dir = theta / abs(theta)                # get direction of turn
+    dtmots.set_velocity(60 * dir,PERCENT)   # set velocity to a stable vel. dir determines direction
+    amnt = degToDis(theta)                  # convert degrees to distance. x2 for radius
+    turn = disToMot(amnt)                   # convert distance to motor turns
+    right.spin_for(REVERSE,turn,TURNS,wait=False)
+    lefty.spin_for(FORWARD,turn,TURNS,wait=True) # spins motors using its encoders as reference
+def pturn(theta):
+    dir = theta / abs(theta)
+    dtmots.set_velocity(60,PERCENT)   # set velocity to a stable vel. dir determines direction
+    amnt = degToDis(theta)*2                # convert degrees to distance
+    turn = disToMot(amnt)                   # convert distrance to motor turns
+    if dir > 0:
+        right.spin_for(FORWARD,turn,TURNS,wait=True)   # start motors
+    else:
+        lefty.spin_for(FORWARD,turn,TURNS,wait=True)   # start motors
+def rpturn(theta):
+    dir = theta / abs(theta)
+    dtmots.set_velocity(60,PERCENT)   # set velocity to a stable vel. dir determines direction
+    amnt = degToDis(theta)*2                # convert degrees to distance
+    turn = disToMot(amnt)                   # convert distrance to motor turns
+    if dir > 0:
+        right.spin_for(FORWARD,turn,TURNS,wait=True)   # start motors
+    else:
+        lefty.spin_for(FORWARD,turn,TURNS,wait=True)   # start motors
+def aturn(theta=90,pivdis=float(5)):
+    vel = 55
+    dtmots.set_velocity(vel,PERCENT)
+    if theta < 0:
+        turnR = abs(calcArc(theta,pivdis+trackwidth))
+        turnL = abs(calcArc(theta,pivdis))
+        veL = vel * (turnL/turnR)
+        veR = vel
+    else:
+        turnL = abs(calcArc(theta,pivdis+trackwidth))
+        turnR = abs(calcArc(theta,pivdis))
+        veL = vel
+        veR = vel * (turnR/turnL)
+    right.spin_for(FORWARD,turnR,TURNS,veR,PERCENT,False)
+    lefty.spin_for(FORWARD,turnL,TURNS,veL,PERCENT,True)
+    wait(5)
+def raturn(theta=90,pivdis=float(5)):
+    vel = 55
+    dtmots.set_velocity(vel,PERCENT)
+    if theta < 0:
+        turnR = abs(calcArc(theta,pivdis+trackwidth))
+        turnL = abs(calcArc(theta,pivdis))
+        veL = vel * (turnL/turnR)
+        veR = vel
+    else:
+        turnL = abs(calcArc(theta,pivdis+trackwidth))
+        turnR = abs(calcArc(theta,pivdis))
+        veL = vel
+        veR = vel * (turnR/turnL)
+    right.spin_for(REVERSE,turnR,TURNS,veR,PERCENT,False)
+    lefty.spin_for(REVERSE,turnL,TURNS,veL,PERCENT,True)
+    wait(5)
+def auton():
+    check = autonDetect()       # check which autonomous should be ran
+    dtmots.set_stopping(COAST)  # set stopping to hold, should make everything more precise
+    if check == "offen": # offensive side auton
+        move(5)
 
+
+
+    elif check == "defen":  # defensive side auton
+    
+        move(20)        
+
+
+        
+    else:                   # no auton; only used in emergencies
+        dtmots.set_stopping(COAST)
+        lefty.set_stopping(COAST)
+        right.set_stopping(COAST)
+        claw.set(True)
+        move(-20)
+        claw.set(False)
+        conveyor.spin_for(FORWARD,3,TURNS)
+        turn(-90)
+        move(-7)
+        claw.set(True)
+        move(6)
+        wait(30,MSEC)
+        turn(145)
+        
+
+
+    
+
+        
    
 
 
@@ -379,3 +523,24 @@ right.set_velocity(100,PERCENT)
 IntakeF.set_velocity(100,PERCENT)
 conveyor.set_velocity(100,PERCENT)
 lift.set_velocity(100,PERCENT) 
+# Main loop
+if Blueloop:
+    while True: 
+        color = Ringdetect.color()
+        if color == Color.RED:
+            conveyor.spin_for(REVERSE,1,TURNS)
+        else:
+            wait(1,MSEC) 
+if Redloop:
+    while True: 
+        color = Ringdetect.color()
+        if color == Color.BLUE:
+            conveyor.spin_for(REVERSE,1,TURNS)
+        else:
+            wait(1,MSEC)
+        
+    
+             
+
+        
+
