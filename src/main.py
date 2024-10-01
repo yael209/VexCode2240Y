@@ -61,6 +61,7 @@ HooksM = DigitalOut(brain.three_wire_port.d) #Monkey Paw Button Up
 Robotpull = DigitalOut(brain.three_wire_port.e) #Moves the robot up
 Ringdetect = Optical(Ports.PORT20)
 autonOpt = Distance(Ports.PORT15)
+inertial_sensor = Inertial(Ports.PORT9) 
 
 def hold(button,lastState=0):
     """Halt thread until current state changes.
@@ -483,7 +484,25 @@ def auton():
         dtmots.set_stopping(COAST)
         lefty.set_stopping(COAST)
         right.set_stopping(COAST)
+        lift.spin(REVERSE)
         claw.set(True)
+        move(-20)
+        lift.stop()
+        claw.set(False)
+        conveyor.spin_for(FORWARD,4,TURNS,wait=False)
+        turn(-90)
+        move(-7)
+        claw.set(True)
+        wait(50,MSEC)
+        move(6)
+        wait(0.7,SECONDS)
+        turn(150)
+        wait(0.6,SECONDS)
+        move(-31)
+        claw.set(True)
+        move(5)
+
+        
         
         
 
@@ -507,6 +526,7 @@ right.set_velocity(100,PERCENT)
 IntakeF.set_velocity(100,PERCENT)
 conveyor.set_velocity(100,PERCENT)
 lift.set_velocity(100,PERCENT) 
+
 # Main loop
 if Blueloop:
     while True: 
