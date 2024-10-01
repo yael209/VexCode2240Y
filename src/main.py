@@ -493,15 +493,7 @@ def auton():
         lefty.set_stopping(COAST)
         right.set_stopping(COAST)
         claw.set(True)
-        move(-20)
-        claw.set(False)
-        conveyor.spin_for(FORWARD,3,TURNS)
-        turn(-90)
-        move(-7)
-        claw.set(True)
-        move(6)
-        wait(30,MSEC)
-        turn(145)
+        
         
 
 
