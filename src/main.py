@@ -351,6 +351,8 @@ driver(RobotLift)
 
 #end region 
 #region Autonomous movement
+dt=SmartDrive(lefty, right, inertial_sensor)
+
 def disToMot(dis):
     return (dis / wheelcirc) * gearatio # if wrong change second operator to '*'
 color = Ringdetect.color()
