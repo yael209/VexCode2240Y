@@ -377,3 +377,6 @@ right.set_velocity(100,PERCENT)
 house.set_velocity(100,PERCENT)
 conveyor.set_velocity(100,PERCENT)
 lift.set_velocity(100,PERCENT) 
+
+
+# lit
